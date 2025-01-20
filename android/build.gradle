@@ -1,0 +1,48 @@
+buildscript {
+    ext.kotlin_version = '1.8.10'
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://storage.googleapis.com/download.flutter.io' }
+
+        gradlePluginPortal() // Make sure gradlePluginPortal is included for plugin resolution
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.3.0' // Specify the correct Android Gradle Plugin version
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10" // Specify the Kotlin plugin version
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://storage.googleapis.com/download.flutter.io' }
+    }
+}
+
+rootProject.buildDir = "../build"
+
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    afterEvaluate { project ->
+        if (project.plugins.hasPlugin("com.android.application") ||
+                project.plugins.hasPlugin("com.android.library")) {
+            project.android {
+                compileSdkVersion 34
+                buildToolsVersion "34.0.0"
+            }
+        }
+    }
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
